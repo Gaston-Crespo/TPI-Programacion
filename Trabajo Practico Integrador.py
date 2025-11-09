@@ -61,6 +61,11 @@ def obtener_paises():
             else:
                 print(" Se OMITE una fila con datos inválidos en el CSV.")
     return paises
+#Oriana: Defino la variable fmt para poder formatear números grandes
+#CONSULTA: ESTA DEFINICION LA PODEMOS USAR?????
+
+def _fmt_num(n):
+    return f"{n: ,}".replace(" ,"," . ")
 
 #Gaston: Esta habria que eliminarla para que no generar conflictos con la funcion modificada por mi mas abajo
 # esta entre comillas para que no se ejecute y que vos puedas ir viendo que habia antes  
@@ -201,7 +206,7 @@ def agregar_paises():
         cargados_ok += 1
         print(f"País '{nombre}' fue agregado correctamente. ")
 
-    print("ERROR // No se completo la carga de nuevos títulos")
+    print("ERROR // No se completo la carga de nuevos Países")
 """
 #Gaston: Ahora tenemos una función que solo se agrega a la lista en memoria. La escritura al CSV se hace 
 #una sola vez, cuando elegimos “Guardar y salir”. Es más seguro 
@@ -213,7 +218,7 @@ def actualizar_pais(paises):
          print("No hay paieses cargados.")
          return
      
-    patron = input("Ingrese el nombre del pais o parte del mismo para actualizarlo: ").strip().lowe()
+    patron = input("Ingrese el nombre del pais o parte del mismo para actualizarlo: ").strip().lower()
     candidatos = [p for p in paises if patron in p['nombre'].lower()]
 
     if not candidatos:
@@ -308,9 +313,95 @@ def filtrar_paises(paises):
         for p in resultado:
             mostrar_pais(p)
 
+#Oriana: Defino punto 5: ordenar países
+def ordenar_paises(paises):
+    if not paises:
+        print("Aún no hay países cargados. ")
+        return
+    
+    print("--ORDENAR PAÍSES--")
+    print("Criterios: ")
+    print("1. Nombre ")
+    print("2. Población ")
+    print("3 . Supercie")
+    crit = input("Elija opción (1,2 o 3): ").strip()
+
+    if crit == "1":
+        clave = "nombre"
+    elif crit == "2":
+        clave = "poblacion"
+    elif crit == "3":
+        clave = "superficie"
+    else:
+        print("La opción de criterio no es válida.")
+        return
+    
+    sentido = input("Orden (asc/desc): ").strip().lower()
+    reverse =(sentido == "desc")
+
+    if clave == "nombre":
+        ordenado = sorted(paises, key=lambda p: p["nombre"].strip().lower(), reverse=reverse)
+    else:
+        ordenado = sorted(paises, key=lambda p: p[clave], reverse=reverse)
+    print(f"\nListado ordenado por {clave} ({'desc' if reverse else 'asc'}):")
+
+    for p in ordenado:
+        mostrar_pais(p)
+
+#Oriana: Punto 6. Mostrar Estadisticas 
+def mostrar_estadisticas(paises):
+    if not paises:
+        print("Aún no hay países cargados.")
+        return
+    
+    mayor = paises[0]
+    menor = paises[0]
+    total_pob = 0
+    total_sup = 0
+    por_continente = {}
+
+    for p in paises:
+        total_pob += p["poblacion"]
+        total_sup += p["superficie"]
+
+        if p["poblacion"] > mayor["poblacion"]:
+            mayor = p
+        if p["poblacion"] < menor ["poblacion"]:
+            menor = p
+
+        cont = p["continente"].strip()
+        por_continente[cont] = por_continente.get(cont, 0) + 1
+
+    n = len(paises)
+    prom_pob = total_pob / n
+    prom_sup = total_sup / n
+
+    print("\n=== ESTADÍSTICAS ===")
+    print(f"• País con MAYOR población : {mayor['nombre']} ({_fmt_num(mayor['poblacion'])})")
+    print(f"• País con MENOR población : {menor['nombre']} ({_fmt_num(menor['poblacion'])})")
+    print(f"• Promedio de población    : {_fmt_num(int(prom_pob))}")
+    print(f"• Promedio de superficie   : {_fmt_num(int(prom_sup))}")
+
+    print("\n• Cantidad de países por continente:")
+    for cont, cant in por_continente.items():
+        print(f"   - {cont}: {cant}")
+    print("")
+
+#Oriana : Punto 7: guardar y salir
+#La variable se debe definir para que se guarden los cambios en el csv
+def guardar_y_salir(paises):
+    print("\n Guardando los cambios en archivo...")
+    guardar_paises(paises)
+    print("Cambios guardados correctamente. ")
+    print("¡Gracias por usar el sistema!Hasta luego. \n")
+
+
+
+ #Oriana: Definimos las variables que va a tener nuestro menu 
+    
 def mostrar_menu():
     # Carga inicial del CSV
-
+    paises = obtener_paises()
     while True:
         print("\n" + "*" * 60)
         print(" SISTEMA DE GESTIÓN DE PAÍSES (TPI - Programación 1) ")
@@ -328,20 +419,19 @@ def mostrar_menu():
 
         match opcion:
                 case "1":
-                    agregar_pais()
+                    agregar_pais(paises)
                 case "2":
-                    actualizar_pais()
+                    actualizar_pais(paises)
                 case "3":
-                    buscar_pais()
+                    buscar_pais(paises)
                 case "4":
-                    filtrar_paises()
+                    filtrar_paises(paises)
                 case "5":
-                    ordenar_paises()
+                    ordenar_paises(paises)
                 case "6":
-                    mostrar_estadisticas()
+                    mostrar_estadisticas(paises)
                 case "7":
-                    guardar_paises()
-                    print(" Cambios guardados. ¡Hasta luego")
+                    guardar_y_salir(paises)
                     break
                 case _:
                     print(" Opción inválida. Intente nuevamente.")
