@@ -323,7 +323,7 @@ def ordenar_paises(paises):
     print("Criterios: ")
     print("1. Nombre ")
     print("2. Población ")
-    print("3 . Supercie")
+    print("3. Supercie")
     crit = input("Elija opción (1,2 o 3): ").strip()
 
     if crit == "1":
@@ -393,7 +393,7 @@ def guardar_y_salir(paises):
     print("\n Guardando los cambios en archivo...")
     guardar_paises(paises)
     print("Cambios guardados correctamente. ")
-    print("¡Gracias por usar el sistema!Hasta luego. \n")
+    print("¡Gracias por usar el sistema!. Hasta luego. \n")
 
 
 
