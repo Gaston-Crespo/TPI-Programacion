@@ -97,7 +97,8 @@ def formatear_num(n):
 #funcion para normalizar texto
 def normalizar(texto):
 # Con esta funcion pasamos a minuscula, sacamos espacios extras y reemplazamos las vocales con tilde. 
-# Sirve para comparar 'America' con 'América' o 'america' sin problema.
+# Sirve para comparar 'America' con 'América' o 'america' sin problema. (gracias al modulo estandar unicodedate)
+
     texto = texto.strip().lower()
     texto = ''.join(
         c for c in unicodedata.normalize('NFD', texto)
